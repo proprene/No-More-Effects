@@ -1,3 +1,5 @@
+![GitHub Downloads](https://img.shields.io/github/downloads/proprene/No-More-Effects/total)
+
 # No-More-Effects
 
 A [Nexus](https://raidcore.gg/Nexus) addon for Guild Wars 2. It hides the
