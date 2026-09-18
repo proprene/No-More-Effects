@@ -1,6 +1,6 @@
 ![GitHub Downloads](https://img.shields.io/github/downloads/proprene/No-More-Effects/total)
 
-##No-More-Effects
+### No-More-Effects
 
 A [Nexus](https://raidcore.gg/Nexus) addon for Guild Wars 2: hide
 non-essential effects and prioritize essential boons/buffs.
