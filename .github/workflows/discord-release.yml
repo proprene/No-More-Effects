@@ -1,0 +1,43 @@
+name: Announce release on Discord
+
+on:
+  release:
+    types: [published]
+
+permissions: {}
+
+jobs:
+  discord:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Post to Discord
+        env:
+          WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+          ROLE_ID: ${{ vars.DISCORD_ROLE_ID }}
+          NAME: ${{ github.event.release.name || github.event.release.tag_name }}
+          TAG: ${{ github.event.release.tag_name }}
+          URL: ${{ github.event.release.html_url }}
+          BODY: ${{ github.event.release.body }}
+        run: |
+          if [ -z "$WEBHOOK" ]; then
+            echo "::error::The DISCORD_WEBHOOK secret is not set (see the comment at the top of this file)."
+            exit 1
+          fi
+          content="A new version of No-More-Effects is out: $TAG"
+          mentions='{"parse": []}'
+          if [ -n "$ROLE_ID" ]; then
+            content="<@&$ROLE_ID> $content"
+            mentions=$(jq -n --arg role "$ROLE_ID" '{parse: [], roles: [$role]}')
+          fi
+          body="${BODY:-See the release page for the changes.}"
+          jq -n \
+            --arg content "$content" \
+            --arg name "No-More-Effects $NAME" \
+            --arg url "$URL" \
+            --arg body "$body" \
+            --argjson mentions "$mentions" \
+            '{content: $content,
+              allowed_mentions: $mentions,
+              embeds: [{title: $name, url: $url, color: 14670500,
+                        description: ($body | .[0:4000])}]}' \
+          | curl -sS --fail-with-body -H "Content-Type: application/json" -d @- "$WEBHOOK"
